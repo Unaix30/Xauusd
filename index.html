@@ -1,39 +1,241 @@
-<main class="flex-1 p-4 max-w-4xl mx-auto w-full space-y-4">
-        <div class="bg-cardBg border border-gray-800 rounded-xl p-5 shadow-lg">
-            <h2 class="text-lg font-semibold mb-2 text-gray-200">Terminal Status</h2>
-            <p class="text-sm text-gray-400">Your custom XAUUSD live trading terminal is successfully hosted and running on GitHub Pages.</p>
-            <div class="mt-4 flex items-center space-x-2">
-                <span class="inline-block w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
-                <span class="text-xs text-emerald-400 font-mono">Connected to Live Market Data</span>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNAIX TRADER - Elite XAUUSD Terminal</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: #0b0f19; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background-color: #111827; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
+        .logo { font-size: 18px; font-weight: bold; color: #f59e0b; letter-spacing: 0.5px; }
+        .badge { font-size: 10px; background: rgba(245, 158, 11, 0.1); color: #f59e0b; padding: 2px 8px; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.2); font-family: monospace; }
+        .price-box { text-align: right; }
+        #live-price { font-size: 16px; font-family: monospace; font-weight: bold; color: #34d399; }
+        .price-label { font-size: 9px; color: #9ca3af; text-transform: uppercase; font-family: monospace; }
+        main { flex: 1; padding: 12px; max-width: 800px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 12px; }
+        .card { background-color: #111827; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .sessions-grid { display: flex; justify-content: space-between; text-align: center; }
+        .session-item { flex: 1; border-right: 1px solid rgba(255,255,255,0.08); padding: 0 4px; }
+        .session-item:last-child { border-right: none; }
+        .session-name { font-size: 10px; color: #9ca3af; text-transform: uppercase; font-family: monospace; }
+        .session-status { font-size: 11px; font-weight: bold; color: #6b7280; margin-top: 4px; }
+        .session-status.open { color: #34d399; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 12px; }
+        @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+        .section-title { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .profile-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+        @media (min-width: 600px) { .profile-btns { grid-template-columns: 1fr; } }
+        .p-btn { font-size: 11px; font-weight: 600; padding: 8px; border-radius: 6px; border: none; background: #1f2937; color: #d1d5db; cursor: pointer; text-align: center; transition: 0.2s; }
+        .p-btn.active { background: #f59e0b; color: #111827; font-weight: bold; }
+        .zone-row { display: flex; justify-content: space-between; padding: 8px 10px; border-radius: 6px; font-size: 11px; font-family: monospace; margin-bottom: 6px; }
+        .zone-res { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; }
+        .zone-pivot { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .zone-sup { background: rgba(52, 211, 153, 0.1); border: 1px solid rgba(52, 211, 153, 0.2); color: #34d399; }
+        .signal-card { background: #0b0f19; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .signal-badge { font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+        .badge-buy { background: rgba(52, 211, 153, 0.2); color: #34d399; }
+        .badge-sell { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .signal-text { font-size: 11px; font-family: monospace; color: #e5e7eb; margin-top: 4px; }
+        .status-tag { font-size: 9px; font-weight: bold; padding: 3px 8px; border-radius: 4px; }
+        .tag-active { background: rgba(52, 211, 153, 0.1); color: #34d399; }
+        footer { background-color: #111827; border-top: 1px solid rgba(255,255,255,0.1); padding: 12px; text-align: center; font-size: 11px; color: #6b7280; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="logo">⚡ UNAIX TRADER</span>
+            <span class="badge">PRO</span>
+        </div>
+        <div class="price-box">
+            <div id="live-price">$2,651.20</div>
+            <div class="price-label">XAUUSD Live</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Market Sessions Bar -->
+        <div class="card">
+            <div class="sessions-grid">
+                <div class="session-item">
+                    <div class="session-name">Tokyo (Asia)</div>
+                    <div id="asia-status" class="session-status">CLOSED</div>
+                </div>
+                <div class="session-item">
+                    <div class="session-name">London</div>
+                    <div id="london-status" class="session-status">CLOSED</div>
+                </div>
+                <div class="session-item" style="border-right: none;">
+                    <div class="session-name">New York</div>
+                    <div id="ny-status" class="session-status">CLOSED</div>
+                </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-            <div class="bg-cardBg border border-gray-800 p-4 rounded-xl text-center">
-                <div class="text-xs text-gray-400 uppercase tracking-wider">Session Bias</div>
-                <div class="text-base font-bold text-emerald-400 mt-1">BULLISH 🚀</div>
+        <!-- Trader Style Filter & Daily Zones -->
+        <div class="grid-2">
+            <!-- Style Selector Card -->
+            <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div class="section-title">Trader Profile</div>
+                <div class="profile-btns">
+                    <button onclick="setProfile('scalper')" id="btn-scalper" class="p-btn active">Scalper</button>
+                    <button onclick="setProfile('day')" id="btn-day" class="p-btn">Day Trader</button>
+                    <button onclick="setProfile('swing')" id="btn-swing" class="p-btn">Swing</button>
+                </div>
             </div>
-            <div class="bg-cardBg border border-gray-800 p-4 rounded-xl text-center">
-                <div class="text-xs text-gray-400 uppercase tracking-wider">Spread</div>
-                <div class="text-base font-mono font-bold text-gray-200 mt-1">0.18 pips</div>
+
+            <!-- Daily Key Zones Card -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div class="section-title" style="margin-bottom:0;">Daily Key Zones</div>
+                    <span style="font-size: 10px; font-family: monospace; color: #fbbf24;">R: 2668 / S: 2635</span>
+                </div>
+                <div>
+                    <div class="zone-row zone-res">
+                        <span>Resistance (R2):</span>
+                        <span style="font-weight: bold;">2,668.50</span>
+                    </div>
+                    <div class="zone-row zone-pivot">
+                        <span>Pivot / High Vol:</span>
+                        <span style="font-weight: bold;">2,652.00</span>
+                    </div>
+                    <div class="zone-row zone-sup">
+                        <span>Support (S2):</span>
+                        <span style="font-weight: bold;">2,635.80</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Trading Signals Feed -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div class="section-title" style="margin-bottom:0;">Active Strategy Signals</div>
+                <span id="profile-badge" class="badge">Scalper Mode</span>
+            </div>
+            <div id="signals-container">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+
+        <!-- TradingView Chart Widget -->
+        <div class="card" style="padding: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <div class="section-title" style="margin-bottom:0;">XAUUSD Live Chart</div>
+                <span style="font-size: 10px; color: #9ca3af; font-family: monospace;">OANDA Feed</span>
+            </div>
+            <div class="tradingview-widget-container" style="height: 360px; width: 100%;">
+                <div class="tradingview-widget-container__widget" style="height: 100%; width: 100%;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+                {
+                    "autosize": true,
+                    "symbol": "OANDA:XAUUSD",
+                    "interval": "15",
+                    "timezone": "Etc/UTC",
+                    "theme": "dark",
+                    "style": "1",
+                    "locale": "en",
+                    "allow_symbol_change": false,
+                    "calendar": false,
+                    "support_host": "https://www.tradingview.com"
+                }
+                </script>
             </div>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-cardBg border-t border-gray-800 p-3 text-center text-xs text-gray-500">
-        XAUUSD Elite Signal Terminal &copy; 2026
+    <footer>
+        UNAIX TRADER &copy; 2026 &bull; Professional Market Terminal
     </footer>
 
-    <!-- Script to Update Live Price -->
+    <!-- Scripts -->
     <script>
+        // Live Price Simulator
         setInterval(() => {
-            const basePrice = 2650.40;
+            const basePrice = 2651.20;
             const randomFluctuation = (Math.random() * 2 - 1).toFixed(2);
             const currentVal = (basePrice + parseFloat(randomFluctuation)).toFixed(2);
             document.getElementById('live-price').innerText = `$${currentVal}`;
         }, 2000);
+
+        // Session Time Checker
+        function updateSessions() {
+            const hour = new Date().getUTCHours();
+            setSessionUI('asia-status', hour >= 0 && hour < 9);
+            setSessionUI('london-status', hour >= 8 && hour < 16.5);
+            setSessionUI('ny-status', hour >= 13 && hour < 21);
+        }
+
+        function setSessionUI(elementId, isOpen) {
+            const el = document.getElementById(elementId);
+            if (isOpen) {
+                el.innerText = "OPEN";
+                el.className = "session-status open";
+            } else {
+                el.innerText = "CLOSED";
+                el.className = "session-status";
+            }
+        }
+        updateSessions();
+
+        // Trader Profile switch logic
+        function setProfile(type) {
+            ['scalper', 'day', 'swing'].forEach(p => {
+                const btn = document.getElementById(`btn-${p}`);
+                if (p === type) {
+                    btn.className = "p-btn active";
+                } else {
+                    btn.className = "p-btn";
+                }
+            });
+
+            const badge = document.getElementById('profile-badge');
+            const container = document.getElementById('signals-container');
+
+            if (type === 'scalper') {
+                badge.innerText = "Scalper Mode (1M - 5M)";
+                container.innerHTML = `
+                    <div class="signal-card">
+                        <div>
+                            <span class="signal-badge badge-buy">BUY SCALP</span>
+                            <div class="signal-text">Entry: <span style="color:#fbbf24;">2650.10</span> | TP: 2653.50</div>
+                        </div>
+                        <span class="status-tag tag-active">ACTIVE</span>
+                    </div>
+                    <div class="signal-card">
+                        <div>
+                            <span class="signal-badge badge-sell">SELL SCALP</span>
+                            <div class="signal-text">Entry: <span style="color:#fbbf24;">2654.20</span> | TP: 2651.00</div>
+                        </div>
+                        <span style="font-size: 9px; color: #9ca3af; font-family: monospace; background: #1f2937; padding: 3px 8px; border-radius: 4px;">PENDING</span>
+                    </div>`;
+            } else if (type === 'day') {
+                badge.innerText = "Day Trader Mode (15M - 1H)";
+                container.innerHTML = `
+                    <div class="signal-card">
+                        <div>
+                            <span class="signal-badge badge-buy">INTRADAY BUY</span>
+                            <div class="signal-text">Entry: <span style="color:#fbbf24;">2645.00</span> | TP: 2662.00</div>
+                        </div>
+                        <span class="status-tag tag-active">ACTIVE</span>
+                    </div>`;
+            } else {
+                badge.innerText = "Swing Trader Mode (4H - Daily)";
+                container.innerHTML = `
+                    <div class="signal-card">
+                        <div>
+                            <span class="signal-badge" style="background: rgba(168,85,247,0.2); color: #c084fc;">SWING POSITION</span>
+                            <div class="signal-text">Entry Zone: <span style="color:#fbbf24;">2630.00 - 2635.00</span></div>
+                        </div>
+                        <span style="font-size: 9px; color: #c084fc; font-family: monospace; background: rgba(168,85,247,0.1); padding: 3px 8px; border-radius: 4px;">HOLDING</span>
+                    </div>`;
+            }
+        }
+        setProfile('scalper');
     </script>
-</body/> <!-- TradingView Widget BEGIN -->
-<div class="bg-cardBg border border-gray-800 rounded-xl p-4 shadow-lg w-full my-4">
-    <
+</body>
+</html>
